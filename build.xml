@@ -1,11 +1,5 @@
 <project name="app" basedir="." default="main">
-	<property name="src.dir" value="src" />
-	<property name="build.dir" value="build" />
-	<property name="classes.dir" value="${build.dir}/classes" />
-	<property name="jar.dir" value="${build.dir}/jar" />
-	<property name="main-class" value="app3.test.Main" />
-	<property name="lib.dir" value="lib" />
-
+	<property file="build.properties" />
 	<path id="classpath">
 		<fileset dir="${lib.dir}" includes="**/*.jar" />
 	</path>
@@ -15,8 +9,7 @@
 
 	<target name="compile">
 		<mkdir dir="${classes.dir}" />
-		<javac srcdir="${src.dir}" destdir="${classes.dir}"
-			classpathref="classpath" />
+		<javac srcdir="${src.dir}" destdir="${classes.dir}" classpathref="classpath" />
 	</target>
 
 	<target name="jar" depends="compile">
@@ -29,7 +22,6 @@
 			<zipgroupfileset dir="${lib.dir}" />
 		</jar>
 	</target>
-
 	<target name="run" depends="jar">
 		<java fork="true" classname="${main-class}">
 			<classpath>
@@ -38,9 +30,6 @@
 			</classpath>
 		</java>
 	</target>
-
 	<target name="clean-build" depends="clean,jar" />
-
 	<target name="main" depends="clean,run" />
-
 </project>

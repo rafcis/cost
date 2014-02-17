@@ -1,0 +1,10 @@
+
+/build
+/bin
+/.externalToolBuilders
+.classpath
+.settings
+.project
+*.csv
+*.xls
+*.xlsx
