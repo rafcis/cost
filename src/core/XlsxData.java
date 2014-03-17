@@ -6,40 +6,41 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 /**
- * Process data from Xls file
+ * Process data from Xlsx file
  * 
  * @author Rafal
  * 
  */
-public class XlsData implements Data {
+public class XlsxData implements Data {
 
 	public FileInputStream file;
-	private static final Logger logger = Logger.getLogger(XlsData.class);
+	private static final Logger logger = Logger.getLogger(XlsxData.class);
 
-	public XlsData(String fileName) throws FileNotFoundException {
+	public XlsxData(String fileName) throws FileNotFoundException {
 		logger.info("File name: " + fileName);
 		file = new FileInputStream(new File(fileName));
 
 	}
 
 	/**
-	 * Proccess data from XLS file
+	 * Proccess data from XLSX file
 	 */
 	@Override
 	public void process() {
-		logger.info("Start processing XLS file");
+		logger.info("Start processing XLSX file");
 		try {
 			List<Cost> list;
 			list = parseDate();
@@ -47,9 +48,9 @@ public class XlsData implements Data {
 			LinkedHashMap<String, BigDecimal> data = calculate.sumByCategory();
 			exportData(data);
 		} catch (IOException e) {
-			logger.error("Process XLS file error: " + e.toString());
+			logger.error("Process XLSX file error: " + e.toString());
 		}
-		logger.info("End processing XLS file");
+		logger.info("End processing XLSX file");
 
 	}
 
@@ -60,13 +61,14 @@ public class XlsData implements Data {
 	 * @throws IOException
 	 */
 	private List<Cost> parseDate() throws IOException {
-		HSSFWorkbook wb = new HSSFWorkbook(file);
-		HSSFSheet sheet = wb.getSheetAt(0);
-		Row row;
+		XSSFWorkbook wb = new XSSFWorkbook(file);
+		XSSFSheet sheet = wb.getSheetAt(0);
+		XSSFRow row;
 		Iterator<Row> rows = sheet.rowIterator();
-		List<Cost> costList = new LinkedList<Cost>();
+		List<Cost> costList = new ArrayList<Cost>();
+
 		while (rows.hasNext()) {
-			row = (Row) rows.next();
+			row = (XSSFRow) rows.next();
 			if (row.getRowNum() == 0) {
 				continue;
 			}
@@ -89,14 +91,13 @@ public class XlsData implements Data {
 	 * Save processed data in file
 	 * 
 	 * @param inputData
-	 * @throws IOException
 	 */
 	private void exportData(LinkedHashMap<String, BigDecimal> inputData)
 			throws IOException {
-		String fileName = "wynik.xls";
+		String fileName = "wynik.xlsx";
 		logger.info("Start export data to file: " + fileName);
-		HSSFWorkbook workbook = new HSSFWorkbook();
-		HSSFSheet sheet = workbook.createSheet("Wynik");
+		XSSFWorkbook workbook = new XSSFWorkbook();
+		XSSFSheet sheet = workbook.createSheet("Wynik");
 		int rownum = 0;
 		for (String key : inputData.keySet()) {
 			Row row = sheet.createRow(rownum++);
@@ -109,6 +110,6 @@ public class XlsData implements Data {
 		out = new FileOutputStream(new File(fileName));
 		workbook.write(out);
 		out.close();
-		logger.info("End export data to XLS");
+		logger.info("End export data to XLSX");
 	}
 }
